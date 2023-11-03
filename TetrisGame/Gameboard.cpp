@@ -43,8 +43,8 @@ void Gameboard::setContent(int x, int y, int content) {
 	}
 }
 
-void Gameboard::setContent(std::vector<Point>& locs, int content) {
-	for (Point& p : locs) {
+void Gameboard::setContent(const std::vector<Point>& locs, int content) {
+	for (const Point& p : locs) {
 		setContent(p, content);
 	}
 }

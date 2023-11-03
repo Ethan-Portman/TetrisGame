@@ -69,9 +69,7 @@ public:
 	TetrisGame(sf::RenderWindow& window, sf::Sprite& blockSprite, const Point& gameboardOffset, const Point& nextShapeOffset)
 		:window(window), blockSprite(blockSprite), gameboardOffset(gameboardOffset), nextShapeOffset(nextShapeOffset)
 	{
-		currentShape.setShape(Tetromino::getRandomShape());
-		currentShape.setGridLoc(board.getSpawnLoc());
-		board.setContent(Gameboard::MAX_X / 2, Gameboard::MAX_Y / 2, 1);
+		reset();
 	}
 
 	// Draw anything to do with the game,
@@ -142,13 +140,13 @@ private:
 	// - param 2: int x;
 	// - param 3: int y;
 	// - return: true/false to indicate successful movement
-	bool attemptMove(GridTetromino& t, int x, int y) const;												
+	bool attemptMove(GridTetromino& t, int x, int y);												
 
 	// drops the tetromino vertically as far as it can 
 	//   legally go.  Use attemptMove(). This can be done in 1 line.
 	// - param 1: GridTetromino shape
 	// - return: nothing;
-	void drop(GridTetromino& t);
+	void drop(GridTetromino& shape);
 
 	// copy the contents (color) of the tetromino's mapped block locs to the grid.
 		//	 1) get the tetromino's mapped locs via tetromino.getBlockLocsMappedToGrid()
@@ -157,7 +155,7 @@ private:
 		//      to true
 		// - param 1: GridTetromino shape
 		// - return: nothing
-	void lock(GridTetromino& t);
+	void lock(GridTetromino& shape);
 	
 	// Graphics methods ==============================================
 	

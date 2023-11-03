@@ -26,30 +26,63 @@ void TetrisGame::onKeyPressed(sf::Event& event) {
 			attemptMove(currentShape, 0, 1);
 		}
 		else if (event.key.code == sf::Keyboard::Space) {
-			// TO_DO
+			drop(currentShape);
+			lock(currentShape);
 		}
 	}
 }
 
+
+// called every game loop to handle ticks & tetromino placement (locking)
+// - param 1: float secondsSinceLastLoop
+// return: nothing
 void TetrisGame::processGameLoop(float secondsSinceLastLoop) {
-	// TO_DO
+	secondsSinceLastTick += secondsSinceLastLoop;
+	if (secondsSinceLastTick > secondsPerTick) {
+		tick();
+		secondsSinceLastTick -= secondsPerTick;
+	}
+
+	if (shapePlacedSinceLastGameLoop) {
+		shapePlacedSinceLastGameLoop = false;
+		if (spawnNextShape()) {
+			pickNextShape();
+			board.removeCompletedRows();
+			determineSecondsPerTick();
+		}
+		else {
+			reset();
+		}
+	}
 }
 
 void TetrisGame::tick() {
-	// TO_DO
+	bool shapeMoved = attemptMove(currentShape, 0, 1);
+	if (!shapeMoved) {
+		lock(currentShape);
+	}
 }
 
 void TetrisGame::reset() {
-	// TO_DO
+	score = 0;
+	updateScoreDisplay();
+
+	determineSecondsPerTick();
+	board.empty();
+
+	pickNextShape();
+	spawnNextShape();
+	pickNextShape();
 }
 
 void TetrisGame::pickNextShape() {
-	// TO_DO
+	nextShape.setShape(Tetromino::getRandomShape());
 }
 
 bool TetrisGame::spawnNextShape() {
-	// TO_DO
-	return false;
+	currentShape = nextShape;
+	currentShape.setGridLoc(board.getSpawnLoc());
+	return isPositionLegal(currentShape);
 }
 
 bool TetrisGame::attemptRotate(GridTetromino& t) const {
@@ -64,7 +97,7 @@ bool TetrisGame::attemptRotate(GridTetromino& t) const {
 	return false;
 }
 
-bool TetrisGame::attemptMove(GridTetromino& t, int x, int y) const {
+bool TetrisGame::attemptMove(GridTetromino& t, int x, int y) {
 	GridTetromino copy = t;
 	copy.move(x, y);
 
@@ -73,15 +106,21 @@ bool TetrisGame::attemptMove(GridTetromino& t, int x, int y) const {
 		return true;
 	}
 
+	if (y == 1) {
+		lock(currentShape);
+	}
+
 	return false;
 }
 
-void TetrisGame::drop(GridTetromino& t) {
-	// TO_DO
+void TetrisGame::drop(GridTetromino& shape) {
+	while (attemptMove(shape, 0, 1));
 }
 
-void TetrisGame::lock(GridTetromino& t) {
-	// TO_DO
+void TetrisGame::lock(GridTetromino& shape) {
+	std::vector<Point> shapeLocs = shape.getBlockLocsMappedToGrid();
+	board.setContent(shapeLocs, static_cast<int>(shape.getColor()));
+	shapePlacedSinceLastGameLoop = true;
 }
 
 
@@ -136,6 +175,6 @@ bool TetrisGame::isWithinBorders(const GridTetromino& shape) const {
 	return true;
 }
 
-void determineSecondsPerTick() {
+void TetrisGame::determineSecondsPerTick() {
 	// TO_DO
 }

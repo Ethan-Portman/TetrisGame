@@ -40,7 +40,7 @@ public:
 	void setContent(int x, int y, int content);
 
 	// set the content for a set of points (ignore invalid points) on the board
-	void setContent(std::vector<Point>& locs, int content);
+	void setContent(const std::vector<Point>& locs, int content);
 
 	// Determine if (valid) all points passed in are empty
 	bool areAllLocsEmpty(const std::vector<Point>& locs) const;
