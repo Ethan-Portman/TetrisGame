@@ -4,24 +4,24 @@
 #include <algorithm>
 
 enum class TetColor { RED, ORANGE, YELLOW, GREEN, BLUE_LIGHT, BLUE_DARK, PURPLE };  // Available Colors
-enum class TetShape { S, Z, L, J, O, I, T };  // Available Shapes
+enum class TetShape { S, Z, L, J, O, I, T, COUNT };  // Available Shapes
 
 // Tetris game piece with color, shape, and block locations
 class Tetromino {
-	friend class TestSuite; // Allow TestSuite to access private members.
+	friend class TestSuite;
 
 private:
-	TetColor color{};
-	TetShape shape{};
+	TetColor color;
+	TetShape shape;
+
+protected:
 	std::vector<Point> blockLocs{};
 
 public:
 	// Tetromino Constructor defaults to a Red S.
-	Tetromino() {
-		color = TetColor::RED;
-		shape = TetShape::S;
-		blockLocs = { Point(-1,0), Point(0,0), Point(0,1), Point(1,1) };
-	}
+	Tetromino() 
+		: color(TetColor::RED), shape(TetShape::S), blockLocs{ Point(-1,0), Point(0,0), Point(0,1), Point(1,1) }
+	{}
 
 	// Fetch the color of the Tetromino.
 	TetColor getColor() const { return color; }
@@ -37,4 +37,6 @@ public:
 
 	// Print the Tetromino to the console.
 	void printToConsole() const;
+
+	static TetShape getRandomShape();
 };
