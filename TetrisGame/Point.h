@@ -1,25 +1,29 @@
 #pragma once
 #include <iostream>
+#include <sstream>
+
+/*
+The Point Class Represents a 2D coordinate on a grid (2D-Array) and provides 
+various operations for manipulation
+*/
 class Point {
     friend class TestSuite;
 
 private:
-    int x{};  // X-Coordinate of the Point
-    int y{};  // Y-Coordinate of the Point
+    int x{};  
+    int y{};  
 public:
-    // Default Constructor
-    Point() : x(0), y(0) {};
-
-    // Constructor with Coordinates
+    // Constructor with x and y input
     Point(int x, int y) : x(x), y(y) {};
 
+    // Default Constructor
+    Point() : Point(0,0) {};
 
     // Get the X-coordinate of the Point
     int getX() const { return x; }
 
     // Get the Y-coordinate of the Point
     int getY() const { return y; }
-
 
     // Set the X-coordinate of the point
     void setX(int x) { this->x = x; }
@@ -38,8 +42,16 @@ public:
     void multiplyY(int factor) { y *= factor; }
 
     // Swap the X & Y coordinates of the Point
-    void swapXY();
+    void swapXY() {
+        int tempVal{ x };
+        x = y;
+        y = tempVal;
+    }
 
-    // Get the String Representation of the Point
-    std::string toString() const;
+    // Print the point in '[x,y]' format
+    std::string toString() const {
+        std::stringstream toStr;
+        toStr << "[" << x << "," << y << "]" << "\n";
+        return toStr.str();
+    }
 };

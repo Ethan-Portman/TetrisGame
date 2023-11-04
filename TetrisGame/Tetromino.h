@@ -3,10 +3,18 @@
 #include "Point.h"
 #include <algorithm>
 
-enum class TetColor { RED, ORANGE, YELLOW, GREEN, BLUE_LIGHT, BLUE_DARK, PURPLE };  // Available Colors
-enum class TetShape { S, Z, L, J, O, I, T, COUNT };  // Available Shapes
+// -------------- COLORS AND SHAPES -------------- //
 
-// Tetris game piece with color, shape, and block locations
+// Available Colors for each Tetromino
+enum class TetColor { RED, ORANGE, YELLOW, GREEN, BLUE_LIGHT, BLUE_DARK, PURPLE, COUNT };
+
+// Available Shapes for each Tetromino
+enum class TetShape { S, Z, L, J, O, I, T, COUNT };  
+
+
+// --------------- TETROMINO CLASS --------------- //
+
+// Tetromino class represents a Tetris game piece with color, shape, and block locations
 class Tetromino {
 	friend class TestSuite;
 
@@ -15,18 +23,28 @@ private:
 	TetShape shape;
 
 protected:
-	std::vector<Point> blockLocs{};
+	std::vector<Point> blockLocs{}; // Points (X,Y Coordinates) of Tetromino.
 
 public:
-	// Tetromino Constructor defaults to a Red S.
+	// Tetromino Constructor defaults to a Red J.
 	Tetromino() 
-		: color(TetColor::RED), shape(TetShape::S), blockLocs{ Point(-1,0), Point(0,0), Point(0,1), Point(1,1) }
+		: color(TetColor::RED), shape(TetShape::S), blockLocs{ 
+			Point(0,1), Point(0,0), Point(0,-1), Point(-1,-1) }
 	{}
 
-	// Fetch the color of the Tetromino.
+	// Get a random TetShape 
+	static TetShape getRandomShape();
+
+	// Get a random TetColor
+	static TetColor getRandomColor();
+
+	// Get the color of the Tetromino.
 	TetColor getColor() const { return color; }
 
-	// Fetch the shape of the Tetromino.
+	// Set the color of the Tetromino.
+	void setColor(const TetColor color) { this->color = color; }
+
+	// Get the shape of the Tetromino.
 	TetShape getShape() const { return shape; }
 
 	// Set the shape of the Tetromino.
@@ -37,6 +55,4 @@ public:
 
 	// Print the Tetromino to the console.
 	void printToConsole() const;
-
-	static TetShape getRandomShape();
 };

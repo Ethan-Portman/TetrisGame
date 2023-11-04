@@ -1,5 +1,13 @@
 #include "TetrisGame.h"
 
+
+// Add block on deck
+// Add scoring and display of scoring
+// Add music and sound effects
+// Add ghost block
+// Introduce levels
+
+
 const int TetrisGame::BLOCK_WIDTH{ 32 };
 const int TetrisGame::BLOCK_HEIGHT{ 32 };
 const double TetrisGame::MAX_SECONDS_PER_TICK{ 0.75 };
@@ -7,6 +15,8 @@ const double TetrisGame::MIN_SECONDS_PER_TICK{ 0.20 };
 
 void TetrisGame::draw() {
 	drawTetromino(currentShape, gameboardOffset);
+	drawTetromino(nextShape, nextShapeOffset);
+	window.draw(scoreText);
 	drawGameboard();
 }
 
@@ -33,6 +43,14 @@ void TetrisGame::onKeyPressed(sf::Event& event) {
 }
 
 
+
+int TetrisGame::getScoresFromRows(int rows) {
+	return rows;
+}
+
+
+
+
 // called every game loop to handle ticks & tetromino placement (locking)
 // - param 1: float secondsSinceLastLoop
 // return: nothing
@@ -47,8 +65,12 @@ void TetrisGame::processGameLoop(float secondsSinceLastLoop) {
 		shapePlacedSinceLastGameLoop = false;
 		if (spawnNextShape()) {
 			pickNextShape();
-			board.removeCompletedRows();
+			int rowsRemoved = board.removeCompletedRows();
+			int scoreAchieved = getScoresFromRows(rowsRemoved);
+			score += scoreAchieved;
+			std::cout << "SCORE " << score << '\n';
 			determineSecondsPerTick();
+			// DO SOMETHING HERE
 		}
 		else {
 			reset();
@@ -77,6 +99,7 @@ void TetrisGame::reset() {
 
 void TetrisGame::pickNextShape() {
 	nextShape.setShape(Tetromino::getRandomShape());
+	nextShape.setColor(Tetromino::getRandomColor());
 }
 
 bool TetrisGame::spawnNextShape() {
@@ -157,7 +180,8 @@ void TetrisGame::drawTetromino(GridTetromino& t, const Point& p) {
 }
 
 void TetrisGame::updateScoreDisplay() {
-	// TO_DO
+	std::string scoreStr = "score: " + score;
+	scoreText.setString(scoreStr);
 }
 
 bool TetrisGame::isPositionLegal(const GridTetromino& shape) const {

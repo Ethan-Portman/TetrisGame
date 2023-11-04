@@ -70,6 +70,15 @@ public:
 		:window(window), blockSprite(blockSprite), gameboardOffset(gameboardOffset), nextShapeOffset(nextShapeOffset)
 	{
 		reset();
+
+		// Setup the font for drawing the score
+		if (!scoreFont.loadFromFile("fonts/RedOctober.ttf")) {
+			assert(false && "Missing font: RedOctober.ttf");
+		}
+		scoreText.setFont(scoreFont);
+		scoreText.setCharacterSize(18);
+		scoreText.setFillColor(sf::Color::White);
+		scoreText.setPosition(425, 325);
 	}
 
 	// Draw anything to do with the game,
@@ -98,6 +107,8 @@ public:
 	// - return: nothing
 	void tick();
 
+
+	int getScoresFromRows(int rows);
 private:
 	// reset everything for a new game (use existing functions) 
 	//  - set the score to 0 and call updateScoreDisplay()
@@ -228,6 +239,7 @@ private:
 	// params: none
 	// return: nothing
 	void determineSecondsPerTick();
+
 
 
 };
