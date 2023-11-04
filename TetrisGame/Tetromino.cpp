@@ -2,9 +2,9 @@
 #include "Point.h"
 
 TetShape Tetromino::getRandomShape() {
-	int randShapeIdx{ std::rand() % static_cast<int>(TetShape::COUNT) };
-	return static_cast<TetShape>(randShapeIdx);
-	//return TetShape::I;
+	//int randShapeIdx{ std::rand() % static_cast<int>(TetShape::COUNT) };
+	//return static_cast<TetShape>(randShapeIdx);
+	return TetShape::I;
 }
 
 TetColor Tetromino::getRandomColor() {

@@ -3,9 +3,9 @@
 #include <vector>
 
 /*
-The GridTetromino class extends the base Tetromino class, representing a Tetromino
-but with an additional grid location. This class is used in the context of a game grid.
-*/
+ * The GridTetromino class extends the base Tetromino class, representing a Tetromino
+ * but with an additional grid location. This class is used in the context of a game grid.
+ */
 class GridTetromino : public Tetromino {
 
 private:
