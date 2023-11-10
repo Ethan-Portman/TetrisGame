@@ -70,7 +70,7 @@ void TetrisGame::processGameLoop(float secondsSinceLastLoop) {
 			int scoreAchieved = getScoresFromRows(board.removeCompletedRows());
 			score += scoreAchieved;
 			determineSecondsPerTick();
-			// DO SOMETHING HERE
+			updateScoreDisplay();
 		}
 		else {
 			reset();
@@ -159,15 +159,9 @@ void TetrisGame::drawBlock(const Point& topLeft, int xOffset, int yOffset, const
 	int xPos = topLeft.getX() + (xOffset * BLOCK_WIDTH);
 	int yPos = topLeft.getY() + (yOffset * BLOCK_HEIGHT);
 
-	// Set the Color of the block
-	sf::IntRect colorRect(colorOffset, 0, BLOCK_WIDTH, BLOCK_HEIGHT);
-	blockSprite.setTextureRect(colorRect);
-
-	// Set the Position of the block
-	blockSprite.setPosition(xPos, yPos);
-
-	// Append the block
-	window.draw(blockSprite);
+	blockSprite.setTextureRect({ colorOffset, 0, BLOCK_WIDTH, BLOCK_HEIGHT });  // Set the color of the new block.
+	blockSprite.setPosition(xPos, yPos);  // Set the position of the new block. 
+	window.draw(blockSprite);  // Append the new block onto the board. 
 }
 
 void TetrisGame::drawGameboard() {
@@ -180,16 +174,18 @@ void TetrisGame::drawGameboard() {
 	}
 }
 
-void TetrisGame::drawTetromino(GridTetromino& t, const Point& p) {
-	for (const Point& blockLoc : t.getBlockLocsMappedToGrid()) {
-		drawBlock(p, blockLoc.getX(), blockLoc.getY(), t.getColor());
+void TetrisGame::drawTetromino(GridTetromino& shape, const Point& p) {
+	for (const Point& blockLoc : shape.getBlockLocsMappedToGrid()) {
+		drawBlock(p, blockLoc.getX(), blockLoc.getY(), shape.getColor());
 	}
 }
 
 void TetrisGame::updateScoreDisplay() {
-	std::string scoreStr = "score: " + score;
+	std::string scoreStr = "score: " + std::to_string(score);
 	scoreText.setString(scoreStr);
 }
+
+// STATE & GAMEPLAY/LOGIC METHODS ----------------------------
 
 bool TetrisGame::isPositionLegal(const GridTetromino& shape) const {
 	return isWithinBorders(shape) && 
@@ -197,8 +193,7 @@ bool TetrisGame::isPositionLegal(const GridTetromino& shape) const {
 }
 
 bool TetrisGame::isWithinBorders(const GridTetromino& shape) const {
-	const std::vector<Point> blocklocs = shape.getBlockLocsMappedToGrid();
-	for (const Point& p : blocklocs) {
+	for (const Point& p : shape.getBlockLocsMappedToGrid()) {
 		if (p.getX() < 0 || p.getX() > board.MAX_X - 1 || p.getY() > board.MAX_Y - 1) {
 			return false;
 		}

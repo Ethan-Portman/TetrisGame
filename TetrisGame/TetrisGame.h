@@ -25,20 +25,21 @@
 class TetrisGame
 {
 public:
-	// Static Constants -----------------------------------------
+	// Static Constants ============================================================================
+
 	static const int BLOCK_WIDTH;			  // pixel width of a tetris block, init to 32
 	static const int BLOCK_HEIGHT;			  // pixel height of a tetris block, int to 32
 	static const double MAX_SECONDS_PER_TICK; // the slowest "tick" rate (in seconds), init to 0.75
 	static const double MIN_SECONDS_PER_TICK; // the fastest "tick" rate (in seconds), init to 0.20
 
 private:	
-	// State members ---------------------------------------------
+	// State members ===============================================================================
 	int score;					// the current game score.
     Gameboard board;			// the gameboard (grid) to represent where all the blocks are.
     GridTetromino nextShape;	// the tetromino shape that is "on deck".
     GridTetromino currentShape;	// the tetromino that is currently falling.
 	
-	// Graphics members ------------------------------------------
+	// Graphics members ============================================================================
 	sf::Sprite& blockSprite;		// the sprite used for all the blocks.
 	sf::RenderWindow& window;		// the window that we are drawing on.
 	const Point gameboardOffset;	// pixel XY offset of the gameboard on the screen
@@ -47,7 +48,7 @@ private:
 	sf::Font scoreFont;				// SFML font for displaying the score.
 	sf::Text scoreText;				// SFML text object for displaying the score
 									
-	// Time members ----------------------------------------------
+	// Time members ================================================================================
 	// A "tick" is the amount of time it takes a block to fall one line.
 	double secondsPerTick = MAX_SECONDS_PER_TICK; // the seconds per tick (changes depending on score)	
 
@@ -60,7 +61,7 @@ public:
 	// Resets the game to its initial State
 	TetrisGame(sf::RenderWindow& window, sf::Sprite& blockSprite, const Point& gameboardOffset, const Point& nextShapeOffset);
 
-	// Event and game loop processing -----------------------------
+	// Event and game loop processing ==============================================================
 
 	// Draws everything to do with the game (board, curentShape, nextShape, score)
 	// Called every gameloop 
@@ -118,68 +119,38 @@ private:
 	// @param shape: The tetromino shape whose contents will be added to the grid. 
 	void lock(GridTetromino& shape);
 	
-	// Graphics methods ==============================================
+	// Graphics methods =================================================================================
 	
-	// Draw a tetris block sprite on the canvas		
-	// The block position is specified in terms of 2 offsets: 
-	//    1) the top left (of the gameboard in pixels)
-	//    2) an x & y offset into the gameboard - in blocks (not pixels)
-	//       meaning they need to be multiplied by BLOCK_WIDTH and BLOCK_HEIGHT
-	//       to get the pixel offset.
-	//	 1) set the block color using blockSprite.setTextureRect()
-	//   2) set the block location using blockSprite.setPosition()   
-	//	 3) draw the block using window.draw()
-	//   For details/instructions on these 3 operations see:
-	//       www.sfml-dev.org/tutorials/2.5/graphics-sprite.php
-	//       use member variables: window and blockSprite (assigned in constructor)
-	// param 1: Point topLeft
-	// param 2: int xOffset
-	// param 3: int yOffset
-	// param 4: TetColor color
-	// return: nothing
+	// Draws a tetris block sprite on the canvas in the window. 
+	// The block position is specified in terms of 2 offsets (top left of gameboard and x, y offset into the gameboard.
+	// @param topLeft: Top left of the gameboard in pixels.
+	// @param xOffset: The x-Offset of new shape on the board in blocks.
+	// @param yOffset: The y-offset of new shape on the board in blocks.
+	// @param color: The color of the new shape
 	void drawBlock(const Point& topLeft, int xOffset, int yOffset, const TetColor& color);
 										
-	// Draw the gameboard blocks on the window
-	//   Iterate through each row & col, use drawBlock() to 
-	//   draw a block if it isn't empty.
-	// params: none
-	// return: nothing
+	// Draws the gameboard blocks on the window by iterating through each row and col and drawing each block. 
+	// Only draws the blocks that are not empty.
 	void drawGameboard();
 	
-	// Draw a tetromino on the window
-	//	 Iterate through each mapped loc & drawBlock() for each.
-	//   The topLeft determines a 'base point' from which to calculate block offsets
-	//      If the Tetromino is on the gameboard: use gameboardOffset
-	// param 1: GridTetromino tetromino
-	// param 2: Point topLeft
-	// return: nothing
-	void drawTetromino(GridTetromino& t, const Point& p);
+	// Draws a tetromino on the window. 
+	// @param shape: The tetromino shape to be drawn onto the canvas.
+	// @param p: The 'base pont' from which to calculate block offsets.
+	void drawTetromino(GridTetromino& shape, const Point& p);
 	
-	// update the score display
-	// form a string "score: ##" to display the current score
-	// user scoreText.setString() to display it.
-	// params: none:
-	// return: nothing
+	// Updates the score display by forming the string "score: ####"
 	void updateScoreDisplay();
 
-	// State & gameplay/logic methods ================================
+	// State & gameplay/logic methods ======================================================================
 
-	// Determine if a Tetromino can legally be placed at its current position
-	// on the gameboard.
-	//   Tip: Make use of Gameboard's areLocsEmpty() and pass it the shape's mapped locs.
-	// - param 1: GridTetromino shape
-	// - return: bool, true if shape is within borders (isWithinBorders()) and 
-	//           the shape's mapped board locs are empty (false otherwise).
+	// Determines if a Tetromino can legally be placed at its current position on the gameboard.
+	// A Tetrmino can be legally placed if it is within the gameboard and all the locations it inhabits are empty. 
+	// @param shape: The tetromino shape being tested if its in a legal position. 
 	bool isPositionLegal(const GridTetromino& shape) const;
 
-	
-	// Determine if the shape is within the left, right, & bottom gameboard borders
-	//   * Ignore the upper border because we want shapes to be able to drop
-	//     in from the top of the gameboard.
-	//   All of a shape's blocks must be inside these 3 borders to return true
-	// - param 1: GridTetromino shape
-	// - return: bool, true if the shape is within the left, right, and lower border
-	//	         of the grid, but *NOT* the top border (false otherwise)
+	// Determines if a Tetromino is within the left, right, & bottom gameboard borders (ignore the upper for spawning purposes)
+	// @param shape: The tetromino shape being tested if its within borders of gameboard.
+	// @return: bool, true if the shape is within the left, right, and lower border of the grid. 
 	bool isWithinBorders(const GridTetromino& shape) const;
 
 
@@ -195,4 +166,6 @@ private:
 };
 
 #endif /* TETRISGAME_H */
+
+
 
