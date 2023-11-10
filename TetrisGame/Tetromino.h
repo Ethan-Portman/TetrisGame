@@ -21,6 +21,7 @@ class Tetromino {
 private:
 	TetColor color;
 	TetShape shape;
+	static std::vector<TetShape> randomShapes;
 
 protected:
 	std::vector<Point> blockLocs{}; // Points (X,Y Coordinates) of Tetromino.
@@ -32,7 +33,10 @@ public:
 			Point(0,1), Point(0,0), Point(0,-1), Point(-1,-1) }
 	{}
 
-	// Get a random TetShape 
+	// Fill vector of random shapes (two of each) to pull from
+	static void fillRandomShapes();
+
+	// Get a random TetShape from the random shapes vector, if empty refill it. 
 	static TetShape getRandomShape();
 
 	// Get a random TetColor

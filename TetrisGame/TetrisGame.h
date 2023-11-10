@@ -25,15 +25,13 @@
 class TetrisGame
 {
 public:
-	// STATIC CONSTANTS
+	// Static Constants -----------------------------------------
 	static const int BLOCK_WIDTH;			  // pixel width of a tetris block, init to 32
 	static const int BLOCK_HEIGHT;			  // pixel height of a tetris block, int to 32
 	static const double MAX_SECONDS_PER_TICK; // the slowest "tick" rate (in seconds), init to 0.75
 	static const double MIN_SECONDS_PER_TICK; // the fastest "tick" rate (in seconds), init to 0.20
 
 private:	
-	// MEMBER VARIABLES
-
 	// State members ---------------------------------------------
 	int score;					// the current game score.
     Gameboard board;			// the gameboard (grid) to represent where all the blocks are.
@@ -50,7 +48,7 @@ private:
 	sf::Text scoreText;				// SFML text object for displaying the score
 									
 	// Time members ----------------------------------------------
-	// Note: a "tick" is the amount of time it takes a block to fall one line.
+	// A "tick" is the amount of time it takes a block to fall one line.
 	double secondsPerTick = MAX_SECONDS_PER_TICK; // the seconds per tick (changes depending on score)	
 
 	double secondsSinceLastTick{ 0.0 };			// update this every game loop until it is >= secsPerTick,
@@ -58,114 +56,66 @@ private:
 	bool shapePlacedSinceLastGameLoop{ false };	// Tracks whether we have placed (locked) a shape on
 												// the gameboard in the current gameloop	
 public:
-	// MEMBER FUNCTIONS
+	// Constructor
+	// Resets the game to its initial State
+	TetrisGame(sf::RenderWindow& window, sf::Sprite& blockSprite, const Point& gameboardOffset, const Point& nextShapeOffset);
 
-	// constructor
-	//   initialize/assign private member vars names that match param names
-	//   reset() the game
-	//   load font from file: fonts/RedOctober.ttf
-	//   setup scoreText
-	// - params: already specified
-	TetrisGame(sf::RenderWindow& window, sf::Sprite& blockSprite, const Point& gameboardOffset, const Point& nextShapeOffset)
-		:window(window), blockSprite(blockSprite), gameboardOffset(gameboardOffset), nextShapeOffset(nextShapeOffset)
-	{
-		reset();
+	// Event and game loop processing -----------------------------
 
-		// Setup the font for drawing the score
-		if (!scoreFont.loadFromFile("fonts/RedOctober.ttf")) {
-			assert(false && "Missing font: RedOctober.ttf");
-		}
-		scoreText.setFont(scoreFont);
-		scoreText.setCharacterSize(18);
-		scoreText.setFillColor(sf::Color::White);
-		scoreText.setPosition(425, 325);
-	}
-
-	// Draw anything to do with the game,
-	//   includes the board, currentShape, nextShape, score
-	//   called every game loop
-	// - params: none
-	// - return: nothing
+	// Draws everything to do with the game (board, curentShape, nextShape, score)
+	// Called every gameloop 
 	void draw();								
 
-	// Event and game loop processing
-	// handles keypress events (up, left, right, down, space)
-	// - param 1: sf::Event event
-	// - return: nothing
-	void onKeyPressed(sf::Event& event);
+	// Handles keypress events for the game (up, left, right, down, space) 
+	// and updates the state of the game accordingly.
+	// @param event: The keyboard event that maps to a command.
+	void onKeyPressed(const sf::Event& event);
 
-	// called every game loop to handle ticks & tetromino placement (locking)
-	// - param 1: float secondsSinceLastLoop
-	// return: nothing
+	// Called every game loop to handle ticks & tetromino placement/ locking.
+	// @param secondsSinceLastLoop: Float - Time elapsed since last tick.
 	void processGameLoop(float secondsSinceLastLoop);
 
-	// A tick() forces the currentShape to move (if there were no tick,
-	// the currentShape would float in position forever). This should
-	// call attemptMove() on the currentShape.  If not successful, lock() 
-	// the currentShape (it can move no further).
-	// - params: none
-	// - return: nothing
+	// Returns the corresponding score for the amount of rows completed at once.
+	// @param rows: The amount of completed rows on the board.
+	int getScoresFromRows(int rows) const;
+
+	// A tick forces the currentShape to move down by one square. If not successfull, 
+	// it is locked into the gameboard.
 	void tick();
 
-
-	int getScoresFromRows(int rows);
 private:
-	// reset everything for a new game (use existing functions) 
-	//  - set the score to 0 and call updateScoreDisplay()
-	//  - call determineSecondsPerTick() to determine the tick rate.
-	//  - clear the gameboard,
-	//  - pick & spawn next shape
-	//  - pick next shape again (for the "on-deck" shape)
-	// - params: none
-	// - return: nothing
+	// Reset everything for a new game 
+	//  - Clear the gameboard and set the score to 0.
+	//  - Determine the tick rate.
+	//  - Pick and spawn the next shape and pick the shape on deck.
 	void reset();
 
-	// assign nextShape.setShape a new random shape  
-	// - params: none
-	// - return: nothing
+	// Selects a random tetShape and tetColor for the next Shape to be used in the game.
 	void pickNextShape();
-	
+
 	// copy the nextShape into the currentShape (through assignment)
 	//   position the currentShape to its spawn location.
-	// - params: none
-	// - return: bool, true/false based on isPositionLegal()
+	//	 @return: True/false based on if currentShape is in a legal position.
 	bool spawnNextShape();																	
 
-	// Test if a rotation is legal on the tetromino and if so, rotate it. 
-	//  To accomplish this:
-	//	 1) create a (local) temporary copy of the tetromino
-	//	 2) rotate it (temp.rotateClockwise())
-	//	 3) test if temp rotation was legal (isPositionLegal()), 
-	//      if so - rotate the original tetromino.
-	// - param 1: GridTetromino shape
-	// - return: bool, true/false to indicate successful movement
-	bool attemptRotate(GridTetromino& t) const;
+	// Test to see if a rotation is legal on the tetromino and if so, rotates it.
+	// @param shape: The tetromino shape that is attempting to rotate.
+	// @return: True/false based on if tetromino rotated or not.
+	bool attemptRotate(GridTetromino& shape) const;
    
-	// test if a move is legal on the tetromino, if so, move it.
-	//  To do this:
-	//	 1) create a (local) temporary copy of the tetromino
-	//	 2) move it (temp.move())
-	//	 3) test if temp move was legal (isPositionLegal(),
-	//      if so - move the original.	
-	// - param 1: GridTetromino shape
-	// - param 2: int x;
-	// - param 3: int y;
-	// - return: true/false to indicate successful movement
-	bool attemptMove(GridTetromino& t, int x, int y);												
+	// Test to see if a movement is legal on the tetromino and if so, moves it.
+	// @param shape: The tetromino shape that is attempting to move.
+	// @param x: The horizontal direction the tetromino shape is attempting to move.
+	// @param y: The vertical direction the tetromino shape is attempting to move.
+	// @return: True/false based on if tetromino moved or not.
+	bool attemptMove(GridTetromino& shape, int x, int y);												
 
-	// drops the tetromino vertically as far as it can 
-	//   legally go.  Use attemptMove(). This can be done in 1 line.
-	// - param 1: GridTetromino shape
-	// - return: nothing;
+	// Drops the tetromino shape vertically as far as it can legally go.
+	// @param shape: The tetromino shape that will drop. 
 	void drop(GridTetromino& shape);
 
-	// copy the contents (color) of the tetromino's mapped block locs to the grid.
-		//	 1) get the tetromino's mapped locs via tetromino.getBlockLocsMappedToGrid()
-		//   2) use the board's setContent() method to set the content at the mapped locations.
-		//   3) record the fact that we placed a shape by setting shapePlacedSinceLastGameLoop
-		//      to true
-		// - param 1: GridTetromino shape
-		// - return: nothing
+	// Copy the Tetrmono shape contents (color) onto the grid. 
+	// @param shape: The tetromino shape whose contents will be added to the grid. 
 	void lock(GridTetromino& shape);
 	
 	// Graphics methods ==============================================

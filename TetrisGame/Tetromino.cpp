@@ -1,10 +1,29 @@
 #include "Tetromino.h"
 #include "Point.h"
 
+std::vector<TetShape> Tetromino::randomShapes;
+
+
+void Tetromino::fillRandomShapes() {
+	randomShapes = { TetShape::O, TetShape::O,
+					 TetShape::I, TetShape::I,
+					 TetShape::S, TetShape::S,
+					 TetShape::Z, TetShape::Z,
+					 TetShape::L, TetShape::L,
+					 TetShape::J, TetShape::J,
+					 TetShape::T, TetShape::T };
+
+	std::random_shuffle(randomShapes.begin(), randomShapes.end());
+}
+
+
 TetShape Tetromino::getRandomShape() {
-	//int randShapeIdx{ std::rand() % static_cast<int>(TetShape::COUNT) };
-	//return static_cast<TetShape>(randShapeIdx);
-	return TetShape::I;
+	if (randomShapes.empty()) {
+		fillRandomShapes();
+	}
+	TetShape lastShape = randomShapes.back();
+	randomShapes.pop_back();
+	return lastShape;
 }
 
 TetColor Tetromino::getRandomColor() {

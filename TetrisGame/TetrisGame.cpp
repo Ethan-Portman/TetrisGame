@@ -1,17 +1,30 @@
 #include "TetrisGame.h"
 
 
-// Add block on deck
-// Add scoring and display of scoring
-// Add music and sound effects
-// Add ghost block
-// Introduce levels
-
+// STATIC CONSTANTS --------------------------------------
 
 const int TetrisGame::BLOCK_WIDTH{ 32 };
 const int TetrisGame::BLOCK_HEIGHT{ 32 };
 const double TetrisGame::MAX_SECONDS_PER_TICK{ 0.75 };
 const double TetrisGame::MIN_SECONDS_PER_TICK{ 0.20 };
+
+// CONSTRUCTOR -------------------------------------------
+
+TetrisGame::TetrisGame(sf::RenderWindow& window, sf::Sprite& blockSprite, const Point& gameboardOffset, const Point& nextShapeOffset)
+	: window(window), blockSprite(blockSprite), gameboardOffset(gameboardOffset), nextShapeOffset(nextShapeOffset)
+{
+	reset();
+
+	if (!scoreFont.loadFromFile("fonts/RedOctober.ttf")) {
+		assert(false && "Missing font: RedOctober.ttf");
+	}
+	scoreText.setFont(scoreFont);
+	scoreText.setCharacterSize(18);
+	scoreText.setFillColor(sf::Color::White);
+	scoreText.setPosition(425, 325);
+}
+
+// MEMBER FUNCTIONS ---------------------------------------
 
 void TetrisGame::draw() {
 	drawTetromino(currentShape, gameboardOffset);
@@ -20,40 +33,29 @@ void TetrisGame::draw() {
 	drawGameboard();
 }
 
-void TetrisGame::onKeyPressed(sf::Event& event) {
+void TetrisGame::onKeyPressed(const sf::Event& event) {
 	if (event.type == sf::Event::KeyPressed) {
-		if (event.key.code == sf::Keyboard::Up) {
-			attemptRotate(currentShape);
-			drawGameboard();
-		}
-		else if (event.key.code == sf::Keyboard::Left) {
-			attemptMove(currentShape, -1, 0);
-		}
-		else if (event.key.code == sf::Keyboard::Right) {
-			attemptMove(currentShape, 1, 0);
-		}
-		else if (event.key.code == sf::Keyboard::Down) {
-			attemptMove(currentShape, 0, 1);
-		}
-		else if (event.key.code == sf::Keyboard::Space) {
-			drop(currentShape);
-			lock(currentShape);
+		switch(event.key.code) {
+			case sf::Keyboard::Up:
+				attemptRotate(currentShape);
+				break;
+			case sf::Keyboard::Left:
+				attemptMove(currentShape, -1, 0);
+				break;
+			case sf::Keyboard::Right:
+				attemptMove(currentShape, 1, 0);
+				break;
+			case sf::Keyboard::Down:
+				attemptMove(currentShape, 0, 1);
+				break;
+			case sf::Keyboard::Space:
+				drop(currentShape);
+				lock(currentShape);
+				break;
 		}
 	}
 }
 
-
-
-int TetrisGame::getScoresFromRows(int rows) {
-	return rows;
-}
-
-
-
-
-// called every game loop to handle ticks & tetromino placement (locking)
-// - param 1: float secondsSinceLastLoop
-// return: nothing
 void TetrisGame::processGameLoop(float secondsSinceLastLoop) {
 	secondsSinceLastTick += secondsSinceLastLoop;
 	if (secondsSinceLastTick > secondsPerTick) {
@@ -65,10 +67,8 @@ void TetrisGame::processGameLoop(float secondsSinceLastLoop) {
 		shapePlacedSinceLastGameLoop = false;
 		if (spawnNextShape()) {
 			pickNextShape();
-			int rowsRemoved = board.removeCompletedRows();
-			int scoreAchieved = getScoresFromRows(rowsRemoved);
+			int scoreAchieved = getScoresFromRows(board.removeCompletedRows());
 			score += scoreAchieved;
-			std::cout << "SCORE " << score << '\n';
 			determineSecondsPerTick();
 			// DO SOMETHING HERE
 		}
@@ -78,20 +78,29 @@ void TetrisGame::processGameLoop(float secondsSinceLastLoop) {
 	}
 }
 
+int TetrisGame::getScoresFromRows(int rows) const {
+	switch (rows) {
+		case 0: return 0;
+		case 1: return 100;
+		case 2: return 300;
+		case 3: return 500;
+		case 4: return 800;
+	}
+}
+
 void TetrisGame::tick() {
-	bool shapeMoved = attemptMove(currentShape, 0, 1);
-	if (!shapeMoved) {
+	if (!attemptMove(currentShape, 0, 1)) {
 		lock(currentShape);
 	}
 }
 
+// PRIVATE METHODS ---------------------------------------
+
 void TetrisGame::reset() {
 	score = 0;
 	updateScoreDisplay();
-
 	determineSecondsPerTick();
 	board.empty();
-
 	pickNextShape();
 	spawnNextShape();
 	pickNextShape();
@@ -108,31 +117,28 @@ bool TetrisGame::spawnNextShape() {
 	return isPositionLegal(currentShape);
 }
 
-bool TetrisGame::attemptRotate(GridTetromino& t) const {
-	GridTetromino copy = t;
+bool TetrisGame::attemptRotate(GridTetromino& shape) const {
+	GridTetromino copy = shape;
 	copy.rotateClockwise();
 
 	if (isPositionLegal(copy)) {
-		t.rotateClockwise();
+		shape.rotateClockwise();
 		return true;
 	}
 
 	return false;
 }
 
-bool TetrisGame::attemptMove(GridTetromino& t, int x, int y) {
-	GridTetromino copy = t;
+bool TetrisGame::attemptMove(GridTetromino& shape, int x, int y) {
+	GridTetromino copy = shape;
 	copy.move(x, y);
 
 	if (isPositionLegal(copy)) {
-		t.move(x, y);
+		shape.move(x, y);
 		return true;
 	}
 
-	if (y == 1) {
-		lock(currentShape);
-	}
-
+	if (y == 1) lock(currentShape);
 	return false;
 }
 
@@ -146,6 +152,7 @@ void TetrisGame::lock(GridTetromino& shape) {
 	shapePlacedSinceLastGameLoop = true;
 }
 
+// GRAPHICS METHODS ---------------------------------------
 
 void TetrisGame::drawBlock(const Point& topLeft, int xOffset, int yOffset, const TetColor& color) {
 	int colorOffset = static_cast<int>(color) * BLOCK_WIDTH;
