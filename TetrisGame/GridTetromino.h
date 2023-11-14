@@ -13,9 +13,16 @@ private:
 
 public:
 	// Default Constructor, initializes Tetromino to its default state and grid location to (0,0).
-	GridTetromino() : 
-		Tetromino(), gridLoc(0,0) 
+	GridTetromino() 
+		: Tetromino(), gridLoc(0,0) 
 	{}
+
+	// Copy Constructor
+	GridTetromino(const GridTetromino& other)
+		: Tetromino(other), gridLoc(other.gridLoc)
+	{}
+
+	friend bool operator==(const GridTetromino& x, const GridTetromino& y);
 
 	// Get the grid location of the Tetromino. 
 	Point getGridLoc() const { return gridLoc; }

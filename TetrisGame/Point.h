@@ -13,6 +13,10 @@ private:
     int x{};  
     int y{};  
 public:
+    bool operator==(const Point& other) const {
+        return (x == other.x) && (y == other.y);
+    }
+
     // Constructor with x and y input
     Point(int x, int y) : x(x), y(y) {};
 

@@ -38,6 +38,7 @@ private:
     Gameboard board;			// the gameboard (grid) to represent where all the blocks are.
     GridTetromino nextShape;	// the tetromino shape that is "on deck".
     GridTetromino currentShape;	// the tetromino that is currently falling.
+	GridTetromino ghostShape;
 	
 	// Graphics members ============================================================================
 	sf::Sprite& blockSprite;		// the sprite used for all the blocks.
@@ -102,7 +103,7 @@ private:
 	// Test to see if a rotation is legal on the tetromino and if so, rotates it.
 	// @param shape: The tetromino shape that is attempting to rotate.
 	// @return: True/false based on if tetromino rotated or not.
-	bool attemptRotate(GridTetromino& shape) const;
+	bool attemptRotate(GridTetromino& shape);
    
 	// Test to see if a movement is legal on the tetromino and if so, moves it.
 	// @param shape: The tetromino shape that is attempting to move.
@@ -118,6 +119,8 @@ private:
 	// Copy the Tetrmono shape contents (color) onto the grid. 
 	// @param shape: The tetromino shape whose contents will be added to the grid. 
 	void lock(GridTetromino& shape);
+
+	void updateGhostShape();
 	
 	// Graphics methods =================================================================================
 	
@@ -127,7 +130,7 @@ private:
 	// @param xOffset: The x-Offset of new shape on the board in blocks.
 	// @param yOffset: The y-offset of new shape on the board in blocks.
 	// @param color: The color of the new shape
-	void drawBlock(const Point& topLeft, int xOffset, int yOffset, const TetColor& color);
+	void drawBlock(const Point& topLeft, int xOffset, int yOffset, const TetColor& color, float alpha);
 										
 	// Draws the gameboard blocks on the window by iterating through each row and col and drawing each block. 
 	// Only draws the blocks that are not empty.
@@ -136,7 +139,7 @@ private:
 	// Draws a tetromino on the window. 
 	// @param shape: The tetromino shape to be drawn onto the canvas.
 	// @param p: The 'base pont' from which to calculate block offsets.
-	void drawTetromino(GridTetromino& shape, const Point& p);
+	void drawTetromino(GridTetromino& shape, const Point& p, float alpha);
 	
 	// Updates the score display by forming the string "score: ####"
 	void updateScoreDisplay();

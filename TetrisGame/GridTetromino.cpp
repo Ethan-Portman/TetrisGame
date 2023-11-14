@@ -12,3 +12,8 @@ std::vector<Point> GridTetromino::getBlockLocsMappedToGrid() const {
 	}
 	return gridLocPoints;
 }
+
+bool operator==(const GridTetromino& x, const GridTetromino& y) {
+	return (x.getGridLoc() == y.getGridLoc()) &&
+		(x.getShape() == y.getShape());
+}

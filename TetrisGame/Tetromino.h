@@ -33,6 +33,11 @@ public:
 			Point(0,1), Point(0,0), Point(0,-1), Point(-1,-1) }
 	{}
 
+	// Copy Constructor
+	Tetromino(const Tetromino& other)
+		: color(other.color), shape(other.shape), blockLocs(other.blockLocs)
+	{}
+
 	// Fill vector of random shapes (two of each) to pull from
 	static void fillRandomShapes();
 

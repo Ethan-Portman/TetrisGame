@@ -27,8 +27,10 @@ TetrisGame::TetrisGame(sf::RenderWindow& window, sf::Sprite& blockSprite, const 
 // MEMBER FUNCTIONS ---------------------------------------
 
 void TetrisGame::draw() {
-	drawTetromino(currentShape, gameboardOffset);
-	drawTetromino(nextShape, nextShapeOffset);
+	drawTetromino(currentShape, gameboardOffset, 1.0f);
+	drawTetromino(nextShape, nextShapeOffset, 1.0f);
+	drawTetromino(ghostShape, gameboardOffset, 0.5f);
+	updateGhostShape();
 	window.draw(scoreText);
 	drawGameboard();
 }
@@ -117,7 +119,7 @@ bool TetrisGame::spawnNextShape() {
 	return isPositionLegal(currentShape);
 }
 
-bool TetrisGame::attemptRotate(GridTetromino& shape) const {
+bool TetrisGame::attemptRotate(GridTetromino& shape) {
 	GridTetromino copy = shape;
 	copy.rotateClockwise();
 
@@ -137,8 +139,7 @@ bool TetrisGame::attemptMove(GridTetromino& shape, int x, int y) {
 		shape.move(x, y);
 		return true;
 	}
-
-	if (y == 1) lock(currentShape);
+	if (y == 1 && shape == currentShape) lock(currentShape);
 	return false;
 }
 
@@ -148,18 +149,34 @@ void TetrisGame::drop(GridTetromino& shape) {
 
 void TetrisGame::lock(GridTetromino& shape) {
 	std::vector<Point> shapeLocs = shape.getBlockLocsMappedToGrid();
+
 	board.setContent(shapeLocs, static_cast<int>(shape.getColor()));
 	shapePlacedSinceLastGameLoop = true;
+
+}
+
+void TetrisGame::updateGhostShape() {
+	ghostShape = currentShape;
+	drop(ghostShape);
 }
 
 // GRAPHICS METHODS ---------------------------------------
 
-void TetrisGame::drawBlock(const Point& topLeft, int xOffset, int yOffset, const TetColor& color) {
+void TetrisGame::drawBlock(const Point& topLeft, int xOffset, int yOffset, const TetColor& color, float alpha) {
 	int colorOffset = static_cast<int>(color) * BLOCK_WIDTH;
 	int xPos = topLeft.getX() + (xOffset * BLOCK_WIDTH);
 	int yPos = topLeft.getY() + (yOffset * BLOCK_HEIGHT);
 
 	blockSprite.setTextureRect({ colorOffset, 0, BLOCK_WIDTH, BLOCK_HEIGHT });  // Set the color of the new block.
+
+	// Adjust alpha value if needed
+	if (alpha == 0.5f) {
+		blockSprite.setColor(sf::Color(255, 255, 255, 100));
+	}
+	else {
+		blockSprite.setColor(sf::Color::White); // Reset to default color (fully opaque)
+	}
+
 	blockSprite.setPosition(xPos, yPos);  // Set the position of the new block. 
 	window.draw(blockSprite);  // Append the new block onto the board. 
 }
@@ -168,15 +185,15 @@ void TetrisGame::drawGameboard() {
 	for (int y = 0; y < board.MAX_Y; y++) {
 		for (int x = 0; x < board.MAX_X; x++) {
 			if (board.getContent(x, y) != board.EMPTY_BLOCK) {
-				drawBlock(gameboardOffset, x, y, static_cast<TetColor>(board.getContent(x, y)));
+				drawBlock(gameboardOffset, x, y, static_cast<TetColor>(board.getContent(x, y)), 1.0);
 			}
 		}
 	}
 }
 
-void TetrisGame::drawTetromino(GridTetromino& shape, const Point& p) {
+void TetrisGame::drawTetromino(GridTetromino& shape, const Point& p, float alpha) {
 	for (const Point& blockLoc : shape.getBlockLocsMappedToGrid()) {
-		drawBlock(p, blockLoc.getX(), blockLoc.getY(), shape.getColor());
+		drawBlock(p, blockLoc.getX(), blockLoc.getY(), shape.getColor(), alpha);
 	}
 }
 
@@ -202,5 +219,22 @@ bool TetrisGame::isWithinBorders(const GridTetromino& shape) const {
 }
 
 void TetrisGame::determineSecondsPerTick() {
-	// TO_DO
+	if (score <= 100) {
+		secondsPerTick = MAX_SECONDS_PER_TICK;
+	}
+	else if (score < 500) {
+		secondsPerTick = MAX_SECONDS_PER_TICK * 0.9;
+	}
+	else if (score < 1000) {
+		secondsPerTick = MAX_SECONDS_PER_TICK * 0.8;
+	}
+	else if (score < 1500) {
+		secondsPerTick = MAX_SECONDS_PER_TICK * 0.7;
+	}
+	else if (score < 2000) {
+		secondsPerTick = MAX_SECONDS_PER_TICK * 0.6;
+	}
+	else {
+		secondsPerTick = MIN_SECONDS_PER_TICK;
+	}
 }
