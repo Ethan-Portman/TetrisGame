@@ -27,7 +27,6 @@ private:
     GridTetromino nextShape;	// The tetromino that is "on deck".
 	GridTetromino ghostShape;	// The tetromino that displays where the currentShape will fall.
 	GameLoopState gameLoopState;
-	bool gameIsOver;			// Keeps reack of when the game ends for reset purposes
 	sf::Clock gameOverClock;	// Forces game to reset after the gameOver Sound
 	
 	// Graphics members ============================================================================

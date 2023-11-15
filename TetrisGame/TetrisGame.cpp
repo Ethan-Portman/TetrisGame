@@ -16,23 +16,24 @@ TetrisGame::TetrisGame(sf::RenderWindow& window, sf::Sprite& blockSprite, const 
 	if (!scoreFont.loadFromFile("fonts/RedOctober.ttf")) {  
 		assert(false && "Missing font: RedOctober.ttf");
 	}
+	scoreText.setFont(scoreFont);
+	scoreText.setCharacterSize(18);
+	scoreText.setFillColor(sf::Color::White);
+	scoreText.setPosition(425, 325);
 
 	if (!tetrisMusic.openFromFile("sounds/tetrisMusic.ogg")) {
 		assert(false && "Missing music: tetrisMusic.ogg");
 	}
+	tetrisMusic.setVolume(50);
+	tetrisMusic.setLoop(true);
 
 	if (!gameOverBuffer.loadFromFile("sounds/gameOver.ogg")) {
 		assert(false && "Missing sound: gameOver.ogg");
 	}
 	gameOver.setBuffer(gameOverBuffer);
 	gameOver.setVolume(100);
-	scoreText.setFont(scoreFont);
-	scoreText.setCharacterSize(18);
-	scoreText.setFillColor(sf::Color::White);
-	scoreText.setPosition(425, 325);
 
-	tetrisMusic.setVolume(50);
-	tetrisMusic.setLoop(true);
+
 	reset();
 }
 
@@ -125,7 +126,6 @@ void TetrisGame::tick() {
 // PRIVATE METHODS ---------------------------------------
 
 void TetrisGame::reset() {
-	gameIsOver = false;
 	gameLoopState = GameLoopState::Playing;
 	score = 0;
 	updateScoreDisplay();
