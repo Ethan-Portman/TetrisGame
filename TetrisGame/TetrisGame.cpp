@@ -25,11 +25,13 @@ TetrisGame::TetrisGame(sf::RenderWindow& window, sf::Sprite& blockSprite, const 
 		assert(false && "Missing sound: gameOver.ogg");
 	}
 	gameOver.setBuffer(gameOverBuffer);
+	gameOver.setVolume(100);
 	scoreText.setFont(scoreFont);
 	scoreText.setCharacterSize(18);
 	scoreText.setFillColor(sf::Color::White);
 	scoreText.setPosition(425, 325);
 
+	tetrisMusic.setVolume(50);
 	tetrisMusic.setLoop(true);
 	reset();
 }
