@@ -19,7 +19,13 @@
 #include "Gameboard.h"
 #include "GridTetromino.h"
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
+enum class GameLoopState {
+	Playing,
+	GameOver,
+	Resetting
+};
 
 class TetrisGame {
 public:
@@ -36,6 +42,9 @@ private:
 	GridTetromino currentShape;	// The tetromino that is currently falling.
     GridTetromino nextShape;	// The tetromino that is "on deck".
 	GridTetromino ghostShape;	// The tetromino that displays where the currentShape will fall.
+	GameLoopState gameLoopState;
+	bool gameIsOver = false;	// Keeps reack of when the game ends for reset purposes
+	sf::Clock gameOverClock;	// Forces game to reset after the gameOver Sound
 	
 	// Graphics members ============================================================================
 	sf::Sprite& blockSprite;		// The sprite used for all the blocks.
@@ -44,7 +53,13 @@ private:
 	const Point nextShapeOffset;	// Pixel XY offset of the nextShape
 	sf::Font scoreFont;				// SFML font for displaying the score.
 	sf::Text scoreText;				// SFML text object for displaying the score
-									
+
+	// Music members ===============================================================================
+	sf::Music tetrisMusic;		     // The Music for the Tetris Game
+	sf::Sound gameOver;			     // Sound for game over
+	sf::SoundBuffer gameOverBuffer;  
+
+	
 	// Time members ================================================================================
 	double secondsPerTick = MAX_SECONDS_PER_TICK;   // The seconds per tick (Time for block to fall one line)	
 	double secondsSinceLastTick{ 0.0 };				// To determine if its time to tick

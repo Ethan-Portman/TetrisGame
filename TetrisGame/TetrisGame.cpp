@@ -13,15 +13,26 @@ const double TetrisGame::MIN_SECONDS_PER_TICK{ 0.20 };
 TetrisGame::TetrisGame(sf::RenderWindow& window, sf::Sprite& blockSprite, const Point& gameboardOffset, const Point& nextShapeOffset)
 	: window(window), blockSprite(blockSprite), gameboardOffset(gameboardOffset), nextShapeOffset(nextShapeOffset)
 {
-	reset();
-
 	if (!scoreFont.loadFromFile("fonts/RedOctober.ttf")) {
 		assert(false && "Missing font: RedOctober.ttf");
 	}
+
+	if (!tetrisMusic.openFromFile("sounds/tetrisMusic.ogg")) {
+		assert(false && "Missing music: tetrisMusic.ogg");
+	}
+
+	if (!gameOverBuffer.loadFromFile("sounds/gameOver.ogg")) {
+		assert(false && "Missing sound: gameOver.ogg");
+	}
+	gameOver.setBuffer(gameOverBuffer);
 	scoreText.setFont(scoreFont);
 	scoreText.setCharacterSize(18);
 	scoreText.setFillColor(sf::Color::White);
 	scoreText.setPosition(425, 325);
+
+	tetrisMusic.setLoop(true);
+	gameLoopState = GameLoopState::Playing;
+	reset();
 }
 
 // MEMBER FUNCTIONS ---------------------------------------
@@ -59,25 +70,38 @@ void TetrisGame::onKeyPressed(const sf::Event& event) {
 }
 
 void TetrisGame::processGameLoop(float secondsSinceLastLoop) {
-	secondsSinceLastTick += secondsSinceLastLoop;
-	if (secondsSinceLastTick > secondsPerTick) {
-		tick();
-		secondsSinceLastTick -= secondsPerTick;
-	}
-
-	if (shapePlacedSinceLastGameLoop) {
-		shapePlacedSinceLastGameLoop = false;
-		if (spawnNextShape()) {
-			pickNextShape();
-			score += getScoresFromRows(board.removeCompletedRows());;
-			determineSecondsPerTick();
-			updateScoreDisplay();
+	if (gameLoopState == GameLoopState::Playing) {
+		secondsSinceLastTick += secondsSinceLastLoop;
+		if (secondsSinceLastTick > secondsPerTick) {
+			tick();
+			secondsSinceLastTick -= secondsPerTick;
 		}
-		else {
+
+		if (shapePlacedSinceLastGameLoop) {
+			shapePlacedSinceLastGameLoop = false;
+			if (spawnNextShape()) {
+				pickNextShape();
+				score += getScoresFromRows(board.removeCompletedRows());
+				determineSecondsPerTick();
+				updateScoreDisplay();
+			}
+			else {
+				tetrisMusic.stop();
+				gameOver.play();
+				gameLoopState = GameLoopState::GameOver;
+				gameOverClock.restart();
+			}
+		}
+	}
+	else if (gameLoopState == GameLoopState::GameOver) {
+		if (gameOverClock.getElapsedTime().asMilliseconds() >= 4000) {
+			gameLoopState = GameLoopState::Resetting;
 			reset();
+			gameLoopState = GameLoopState::Playing;
 		}
 	}
 }
+
 
 int TetrisGame::getScoresFromRows(int rows) const {
 	switch (rows) {
@@ -105,6 +129,7 @@ void TetrisGame::reset() {
 	pickNextShape();
 	spawnNextShape();
 	pickNextShape();
+	tetrisMusic.play();
 }
 
 void TetrisGame::pickNextShape() {
