@@ -1,19 +1,3 @@
-// This class encapsulates the tetris game and its drawing routines, gameplay, & control logic.
-// This class was designed so with the idea of potentially instantiating 2 of them
-// and have them run side by side (player vs player).
-// So, anything you would need for an individual tetris game has been included here.
-// Anything you might use between games (like the background, or the sprite used for 
-// rendering a tetromino block) was left in main.cpp
-// 
-// This class is responsible for:
-//   - setting up the board,
-//	 - drawing game elements to the screen
-//   - spawning tetrominoes,
-//   - handling user input,
-//   - moving and placing tetrominoes 
-//
-//  [expected .cpp size: ~ 275 lines]
-
 #pragma once
 
 #include "Gameboard.h"
@@ -43,7 +27,7 @@ private:
     GridTetromino nextShape;	// The tetromino that is "on deck".
 	GridTetromino ghostShape;	// The tetromino that displays where the currentShape will fall.
 	GameLoopState gameLoopState;
-	bool gameIsOver = false;	// Keeps reack of when the game ends for reset purposes
+	bool gameIsOver;			// Keeps reack of when the game ends for reset purposes
 	sf::Clock gameOverClock;	// Forces game to reset after the gameOver Sound
 	
 	// Graphics members ============================================================================

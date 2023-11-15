@@ -10,14 +10,14 @@ int main() {
 
 	/*--------- Load & Set Sprites/ Textures used in Game ---------*/
 
-	sf::Sprite blockSprite;			// The tetromino block sprite
-	sf::Texture blockTexture;		// The tetromino block texture
-	sf::Sprite backgroundSprite;	// The background sprite
-	sf::Texture backgroundTexture;	// The background texture
+	sf::Sprite blockSprite;									  // The tetromino block sprite
+	sf::Texture blockTexture;								  // The tetromino block texture
+	sf::Sprite backgroundSprite;							  // The background sprite
+	sf::Texture backgroundTexture;							  // The background texture
 	backgroundTexture.loadFromFile("images/background.png");  // Load the Background Sprite
 	backgroundSprite.setTexture(backgroundTexture);			  // Set texture of Background Sprite
-	blockTexture.loadFromFile("images/tiles.png");	// Load the Tetris Block Sprite
-	blockSprite.setTexture(blockTexture);			// Set texture of Tetris Block Sprite
+	blockTexture.loadFromFile("images/tiles.png");			  // Load the Tetris Block Sprite
+	blockSprite.setTexture(blockTexture);					  // Set texture of Tetris Block Sprite
 
 	/*------------------ Create the Game Window ------------------*/
 

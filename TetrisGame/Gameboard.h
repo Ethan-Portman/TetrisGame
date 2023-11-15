@@ -2,15 +2,16 @@
 #include <vector>
 #include <cassert>
 #include <iomanip> 
-#include "Point.h"
 #include <thread>
 #include <chrono>
+#include "Point.h"
 
 /*
  * The Gameboard class represents the game grid used in Tetris.
  */
 class Gameboard {
 	friend int main();  
+	friend class TetrisGame;
 public:
 	static const int MAX_X = 10;		// Gameboard x dimension
 	static const int MAX_Y = 19;		// Gameboard y dimension

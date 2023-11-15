@@ -13,7 +13,7 @@ const double TetrisGame::MIN_SECONDS_PER_TICK{ 0.20 };
 TetrisGame::TetrisGame(sf::RenderWindow& window, sf::Sprite& blockSprite, const Point& gameboardOffset, const Point& nextShapeOffset)
 	: window(window), blockSprite(blockSprite), gameboardOffset(gameboardOffset), nextShapeOffset(nextShapeOffset)
 {
-	if (!scoreFont.loadFromFile("fonts/RedOctober.ttf")) {
+	if (!scoreFont.loadFromFile("fonts/RedOctober.ttf")) {  
 		assert(false && "Missing font: RedOctober.ttf");
 	}
 
@@ -31,7 +31,6 @@ TetrisGame::TetrisGame(sf::RenderWindow& window, sf::Sprite& blockSprite, const 
 	scoreText.setPosition(425, 325);
 
 	tetrisMusic.setLoop(true);
-	gameLoopState = GameLoopState::Playing;
 	reset();
 }
 
@@ -81,7 +80,9 @@ void TetrisGame::processGameLoop(float secondsSinceLastLoop) {
 			shapePlacedSinceLastGameLoop = false;
 			if (spawnNextShape()) {
 				pickNextShape();
-				score += getScoresFromRows(board.removeCompletedRows());
+				if (board.getCompletedRowIndices().size() > 0) {
+					score += getScoresFromRows(board.removeCompletedRows());
+				}
 				determineSecondsPerTick();
 				updateScoreDisplay();
 			}
@@ -122,6 +123,8 @@ void TetrisGame::tick() {
 // PRIVATE METHODS ---------------------------------------
 
 void TetrisGame::reset() {
+	gameIsOver = false;
+	gameLoopState = GameLoopState::Playing;
 	score = 0;
 	updateScoreDisplay();
 	determineSecondsPerTick();
@@ -163,7 +166,6 @@ bool TetrisGame::attemptMove(GridTetromino& shape, int x, int y) {
 		shape.move(x, y);
 		return true;
 	}
-	if (y == 1 && shape == currentShape) lock(currentShape);
 	return false;
 }
 
