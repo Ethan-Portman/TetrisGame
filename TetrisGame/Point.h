@@ -4,7 +4,7 @@
 
 /*
 The Point Class Represents a 2D coordinate on a grid (2D-Array) and provides 
-various operations for manipulation
+various operations for manipulation.
 */
 class Point {
     friend class TestSuite;
@@ -13,15 +13,16 @@ private:
     int x{};  
     int y{};  
 public:
-    bool operator==(const Point& other) const {
-        return (x == other.x) && (y == other.y);
-    }
-
     // Constructor with x and y input
     Point(int x, int y) : x(x), y(y) {};
 
     // Default Constructor
-    Point() : Point(0,0) {};
+    Point() : Point(0, 0) {};
+
+    // Points are equal if they have the same x and y values.
+    bool operator==(const Point& other) const {
+        return (x == other.x) && (y == other.y);
+    }
 
     // Get the X-coordinate of the Point
     int getX() const { return x; }
@@ -37,7 +38,6 @@ public:
 
     // Set both the X & Y Coordinates of the Point
     void setXY(int x, int y) { this->x = x; this->y = y; }
-
 
     // Multiply the Y-coordinate by a factor
     void multiplyX(int factor) { x *= factor; }

@@ -17,11 +17,12 @@ public:
 		: Tetromino(), gridLoc(0,0) 
 	{}
 
-	// Copy Constructor
+	// Copy Constructor.
 	GridTetromino(const GridTetromino& other)
 		: Tetromino(other), gridLoc(other.gridLoc)
 	{}
 
+	// Two GridTetrominos are identical if they have the same gridLoc and Shape.
 	friend bool operator==(const GridTetromino& x, const GridTetromino& y);
 
 	// Get the grid location of the Tetromino. 

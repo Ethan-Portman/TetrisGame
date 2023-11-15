@@ -3,14 +3,14 @@
 #include <cassert>
 #include <iomanip> 
 #include "Point.h"
+#include <thread>
+#include <chrono>
 
 /*
  * The Gameboard class represents the game grid used in Tetris.
- * It provides methods to interact with and manipulate the game grid, including filling,
- * printing, getting and setting content, removing completed rows, and more.
  */
 class Gameboard {
-	friend int main();  // Allow main() to access private members.
+	friend int main();  
 public:
 	static const int MAX_X = 10;		// Gameboard x dimension
 	static const int MAX_Y = 19;		// Gameboard y dimension

@@ -14,52 +14,49 @@
 //
 //  [expected .cpp size: ~ 275 lines]
 
-#ifndef TETRISGAME_H
-#define TETRISGAME_H
+#pragma once
 
 #include "Gameboard.h"
 #include "GridTetromino.h"
 #include <SFML/Graphics.hpp>
 
 
-class TetrisGame
-{
+class TetrisGame {
 public:
 	// Static Constants ============================================================================
-
-	static const int BLOCK_WIDTH;			  // pixel width of a tetris block, init to 32
-	static const int BLOCK_HEIGHT;			  // pixel height of a tetris block, int to 32
-	static const double MAX_SECONDS_PER_TICK; // the slowest "tick" rate (in seconds), init to 0.75
-	static const double MIN_SECONDS_PER_TICK; // the fastest "tick" rate (in seconds), init to 0.20
+	static const int BLOCK_WIDTH;			  // Pixel width of a tetris block
+	static const int BLOCK_HEIGHT;			  // Pixel height of a tetris block
+	static const double MAX_SECONDS_PER_TICK; // The slowest "tick" rate (in seconds)
+	static const double MIN_SECONDS_PER_TICK; // The fastest "tick" rate (in seconds)
 
 private:	
 	// State members ===============================================================================
-	int score;					// the current game score.
-    Gameboard board;			// the gameboard (grid) to represent where all the blocks are.
-    GridTetromino nextShape;	// the tetromino shape that is "on deck".
-    GridTetromino currentShape;	// the tetromino that is currently falling.
-	GridTetromino ghostShape;
+	int score;					// The current game score.
+    Gameboard board;			// The gameboard (grid) to represent where all the blocks are.
+	GridTetromino currentShape;	// The tetromino that is currently falling.
+    GridTetromino nextShape;	// The tetromino that is "on deck".
+	GridTetromino ghostShape;	// The tetromino that displays where the currentShape will fall.
 	
 	// Graphics members ============================================================================
-	sf::Sprite& blockSprite;		// the sprite used for all the blocks.
-	sf::RenderWindow& window;		// the window that we are drawing on.
-	const Point gameboardOffset;	// pixel XY offset of the gameboard on the screen
-	const Point nextShapeOffset;	// pixel XY offset to the nextShape
-
+	sf::Sprite& blockSprite;		// The sprite used for all the blocks.
+	sf::RenderWindow& window;		// The window the game is drawn on.
+	const Point gameboardOffset;	// Pixel XY offset of the gameboard on the screen
+	const Point nextShapeOffset;	// Pixel XY offset of the nextShape
 	sf::Font scoreFont;				// SFML font for displaying the score.
 	sf::Text scoreText;				// SFML text object for displaying the score
 									
 	// Time members ================================================================================
-	// A "tick" is the amount of time it takes a block to fall one line.
-	double secondsPerTick = MAX_SECONDS_PER_TICK; // the seconds per tick (changes depending on score)	
+	double secondsPerTick = MAX_SECONDS_PER_TICK;   // The seconds per tick (Time for block to fall one line)	
+	double secondsSinceLastTick{ 0.0 };				// To determine if its time to tick
+	bool shapePlacedSinceLastGameLoop{ false };		// Tracks whether a shape has been placed in the current gameloop
 
-	double secondsSinceLastTick{ 0.0 };			// update this every game loop until it is >= secsPerTick,
-												// we then know to trigger a tick.  Reduce this var (by a tick) & repeat.
-	bool shapePlacedSinceLastGameLoop{ false };	// Tracks whether we have placed (locked) a shape on
-												// the gameboard in the current gameloop	
 public:
 	// Constructor
 	// Resets the game to its initial State
+	// @param window: Where the Tetris Game will be held
+	// @param blockSprite: The Sprite used for all Tetrominos
+	// @param gameboardOffset: The offset of the Gameboard on the Window
+	// @param nextShapeOffset: The offset of the nextShape on the Gameboard
 	TetrisGame(sf::RenderWindow& window, sf::Sprite& blockSprite, const Point& gameboardOffset, const Point& nextShapeOffset);
 
 	// Event and game loop processing ==============================================================
@@ -79,6 +76,7 @@ public:
 
 	// Returns the corresponding score for the amount of rows completed at once.
 	// @param rows: The amount of completed rows on the board.
+	// @return: The score attained from the amount of rows comppleted.
 	int getScoresFromRows(int rows) const;
 
 	// A tick forces the currentShape to move down by one square. If not successfull, 
@@ -120,6 +118,8 @@ private:
 	// @param shape: The tetromino shape whose contents will be added to the grid. 
 	void lock(GridTetromino& shape);
 
+	// Drops the Ghost Shape as far as it will go to represent where the current
+	// shape will fall.
 	void updateGhostShape();
 	
 	// Graphics methods =================================================================================
@@ -163,12 +163,4 @@ private:
 	// params: none
 	// return: nothing
 	void determineSecondsPerTick();
-
-
-
 };
-
-#endif /* TETRISGAME_H */
-
-
-

@@ -38,13 +38,13 @@ public:
 		: color(other.color), shape(other.shape), blockLocs(other.blockLocs)
 	{}
 
-	// Fill vector of random shapes (two of each) to pull from
+	// Fill vector of random shapes (two of each) to pull from.
 	static void fillRandomShapes();
 
 	// Get a random TetShape from the random shapes vector, if empty refill it. 
 	static TetShape getRandomShape();
 
-	// Get a random TetColor
+	// Get a random TetColor.
 	static TetColor getRandomColor();
 
 	// Get the color of the Tetromino.

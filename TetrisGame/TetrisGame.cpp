@@ -1,7 +1,7 @@
 #include "TetrisGame.h"
 
 
-// STATIC CONSTANTS --------------------------------------
+// STATIC CONSTANTS ======================================
 
 const int TetrisGame::BLOCK_WIDTH{ 32 };
 const int TetrisGame::BLOCK_HEIGHT{ 32 };
@@ -69,8 +69,7 @@ void TetrisGame::processGameLoop(float secondsSinceLastLoop) {
 		shapePlacedSinceLastGameLoop = false;
 		if (spawnNextShape()) {
 			pickNextShape();
-			int scoreAchieved = getScoresFromRows(board.removeCompletedRows());
-			score += scoreAchieved;
+			score += getScoresFromRows(board.removeCompletedRows());;
 			determineSecondsPerTick();
 			updateScoreDisplay();
 		}
@@ -166,19 +165,17 @@ void TetrisGame::drawBlock(const Point& topLeft, int xOffset, int yOffset, const
 	int colorOffset = static_cast<int>(color) * BLOCK_WIDTH;
 	int xPos = topLeft.getX() + (xOffset * BLOCK_WIDTH);
 	int yPos = topLeft.getY() + (yOffset * BLOCK_HEIGHT);
+	blockSprite.setTextureRect({ colorOffset, 0, BLOCK_WIDTH, BLOCK_HEIGHT });  
 
-	blockSprite.setTextureRect({ colorOffset, 0, BLOCK_WIDTH, BLOCK_HEIGHT });  // Set the color of the new block.
-
-	// Adjust alpha value if needed
-	if (alpha == 0.5f) {
+	if (alpha == 0.5f) {  // Adjust alpha value if needed
 		blockSprite.setColor(sf::Color(255, 255, 255, 100));
 	}
 	else {
-		blockSprite.setColor(sf::Color::White); // Reset to default color (fully opaque)
+		blockSprite.setColor(sf::Color::White); 
 	}
 
-	blockSprite.setPosition(xPos, yPos);  // Set the position of the new block. 
-	window.draw(blockSprite);  // Append the new block onto the board. 
+	blockSprite.setPosition(xPos, yPos);  
+	window.draw(blockSprite);  
 }
 
 void TetrisGame::drawGameboard() {

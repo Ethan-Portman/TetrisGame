@@ -53,7 +53,11 @@ bool Gameboard::areAllLocsEmpty(const std::vector<Point>& locs) const {
 
 int Gameboard::removeCompletedRows() {
 	std::vector<int> completedRows{ getCompletedRowIndices() };
-	removeRows(completedRows);
+
+	if (!completedRows.empty()) {
+		removeRows(completedRows);
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	}
 
 	return completedRows.size();
 }

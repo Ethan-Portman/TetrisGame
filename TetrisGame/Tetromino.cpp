@@ -3,7 +3,6 @@
 
 std::vector<TetShape> Tetromino::randomShapes;
 
-
 void Tetromino::fillRandomShapes() {
 	randomShapes = { TetShape::O, TetShape::O,
 					 TetShape::I, TetShape::I,
@@ -21,9 +20,9 @@ TetShape Tetromino::getRandomShape() {
 	if (randomShapes.empty()) {
 		fillRandomShapes();
 	}
-	TetShape lastShape = randomShapes.back();
+	TetShape randomShape = randomShapes.back();
 	randomShapes.pop_back();
-	return lastShape;
+	return randomShape;
 }
 
 TetColor Tetromino::getRandomColor() {
